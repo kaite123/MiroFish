@@ -36,6 +36,27 @@ class GraphInfo:
         }
 
 
+def _build_node_presentation(node, edge_count: int) -> Dict[str, Any]:
+    """Build deterministic presentation metadata for graph nodes."""
+    return {
+        "kind": "star-node",
+        "depth_band": "mid",
+        "importance": max(1, min(edge_count, 5)),
+        "breathing_glow": "soft",
+        "discoverable": True,
+    }
+
+
+def _build_story_card(node) -> Dict[str, str]:
+    """Build the story card payload for a graph node."""
+    description = (node.summary or "").strip() or "A remembered fragment waiting to be opened."
+    return {
+        "title": (node.name or "Untitled memory").strip(),
+        "description": description,
+        "tone": "quiet-summoned",
+    }
+
+
 class GraphBuilderService:
     """
     图谱构建服务
@@ -435,13 +456,21 @@ class GraphBuilderService:
         for node in nodes:
             node_map[node.uuid_] = node.name or ""
         
+        node_edge_counts = {}
+        for edge in edges:
+            node_edge_counts[edge.source_node_uuid] = node_edge_counts.get(edge.source_node_uuid, 0) + 1
+            node_edge_counts[edge.target_node_uuid] = node_edge_counts.get(edge.target_node_uuid, 0) + 1
+
         nodes_data = []
         for node in nodes:
             # 获取创建时间
             created_at = getattr(node, 'created_at', None)
             if created_at:
                 created_at = str(created_at)
-            
+
+            edge_count = node_edge_counts.get(node.uuid_, 0)
+            presentation = _build_node_presentation(node, edge_count)
+
             nodes_data.append({
                 "uuid": node.uuid_,
                 "name": node.name,
@@ -449,6 +478,11 @@ class GraphBuilderService:
                 "summary": node.summary or "",
                 "attributes": node.attributes or {},
                 "created_at": created_at,
+                "presentation": presentation,
+                "story_card": _build_story_card(node),
+                "edge_count": edge_count,
+                "size_hint": max(1, min(edge_count + 1, 6)),
+                "depth_hint": presentation["depth_band"],
             })
         
         edges_data = []
@@ -492,6 +526,19 @@ class GraphBuilderService:
             "edges": edges_data,
             "node_count": len(nodes_data),
             "edge_count": len(edges_data),
+            "scene": {
+                "motion": {
+                    "reduced_motion_supported": True,
+                    "focus_sequence": [
+                        "node-activate",
+                        "trace-flow",
+                        "camera-push",
+                        "card-reveal",
+                    ],
+                },
+                "limits": {"max_particles": 24},
+                "contrast": {"card_text_min_ratio": 4.5},
+            },
         }
     
     def delete_graph(self, graph_id: str):
