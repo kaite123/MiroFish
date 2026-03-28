@@ -64,6 +64,7 @@
             type="button"
             @click.stop="activateNode(node)"
           >
+            <span class="star-node__hitbox" aria-hidden="true"></span>
             <span class="star-node__halo"></span>
             <span class="star-node__core"></span>
             <span class="star-node__label">{{ node.story_card?.title || node.name || 'Untitled memory' }}</span>
@@ -606,6 +607,12 @@ onUnmounted(() => {
   color: inherit;
 }
 
+.star-node__hitbox {
+  position: absolute;
+  inset: -0.65rem;
+  border-radius: 999px;
+}
+
 .star-node__halo,
 .star-node__core {
   position: absolute;
@@ -665,6 +672,16 @@ onUnmounted(() => {
 
 .star-node--muted {
   opacity: 0.48;
+}
+
+.star-node:focus-visible {
+  outline: none;
+}
+
+.star-node:focus-visible .star-node__hitbox {
+  box-shadow:
+    0 0 0 1px rgba(205, 226, 255, 0.92),
+    0 0 0 0.4rem rgba(114, 161, 255, 0.22);
 }
 
 @keyframes starPulse {
