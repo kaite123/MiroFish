@@ -40,6 +40,12 @@ MiroFish is dedicated to creating a swarm intelligence mirror that maps reality.
 
 From serious predictions to playful simulations, we let every "what if" see its outcome, making it possible to predict anything.
 
+## 📜 Attribution and License
+
+This repository continues development based on the open-source project [666ghj/MiroFish](https://github.com/666ghj/MiroFish) and retains the original **GNU AGPL v3** license.
+
+If you deploy, distribute, or further modify this repository, please comply with the AGPL v3 terms in the root `LICENSE` file.
+
 ## 🌐 Live Demo
 
 Welcome to visit our online demo environment and experience a prediction simulation on trending public opinion events we've prepared for you: [mirofish-live-demo](https://666ghj.github.io/mirofish-demo/)
