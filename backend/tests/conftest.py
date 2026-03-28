@@ -3,6 +3,8 @@ import sys
 import types
 from pathlib import Path
 
+import pytest
+
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
@@ -48,3 +50,17 @@ except ModuleNotFoundError:
 
     sys.modules["zep_cloud"] = zep_cloud
     sys.modules["zep_cloud.client"] = zep_cloud_client
+
+
+@pytest.fixture()
+def app():
+    from app import create_app
+
+    app = create_app()
+    app.config.update(TESTING=True)
+    return app
+
+
+@pytest.fixture()
+def client(app):
+    return app.test_client()
